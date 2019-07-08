@@ -39,12 +39,13 @@ print(currentEpisodeList)
 print(currentSubList)
 
 # Sort lists
-currentEpisodeList.sort(key=str.lower)
-currentSubList.sort(key=str.lower)
-
-# General lists check, post sort
-print (currentEpisodeList)
-print (currentSubList)
+ok_to_sort = input("Does this need to be sorted? Yes/No")
+if ok_to_sort == "Yes":
+    currentEpisodeList.sort(key=str.lower)
+    currentSubList.sort(key=str.lower)
+    # General lists check, post sort
+    print (currentEpisodeList)
+    print (currentSubList)
 
 x = 0
 for name in currentEpisodeList:
