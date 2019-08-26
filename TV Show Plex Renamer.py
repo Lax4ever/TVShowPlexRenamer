@@ -7,13 +7,16 @@ def buttonTest():
     print("Button Works!")
     
 def sourceCheck():    
-    print(source_path)
-    print(type(source_path))
+    print("Source Path = " + source_path)
+    print("Source Var = " + source_var.get())
+    print(currentEpisodeList)
+    print(newEpisodeList)
 
 # Get source directory through filedialog
 def getSourceDir():
     dir_path_source = filedialog.askdirectory(title="Please select a folder")
     dir_path = dir_path_source + "/" # Needed to make complete path, filedialogue value does not return the final slash
+    file_path.delete(0, 'end')
     file_path.insert(0, dir_path)
     print(dir_path)
     return dir_path
@@ -21,15 +24,10 @@ def getSourceDir():
 
 def assignSourceDir():
     global source_path
+    source_path = ""
     source_path = getSourceDir()
 
 def renameFiles():
-
-    # Pulling global values from entry boxes
-    global source_path
-    global source_var
-    global showname_var
-    global season_var
 
     # Get source directory, replaced by getSourceDir function
     # dir_path_source = filedialog.askdirectory(title="Please select a folder")
@@ -37,12 +35,18 @@ def renameFiles():
 
     # Check for source directory either manually entered or through filedialog
     orig_path = source_path
-    if orig_path:
+    if orig_path == source_path:
         print("All Good")
+        print(orig_path)
     if not orig_path:
-        print("Not Good. Needs Change")
+        print("Not Good. Get manual path from Entry box")
         orig_path = source_var.get()
-    print(orig_path)
+        # Check to make sure the path is, at the very least, valid
+        if not os.path.exists(orig_path):
+            print("Invalid text in Entry box, getting through filedialog")
+            dir_path_source = filedialog.askdirectory(title="Please select a folder")
+            orig_path = dir_path_source + "/" # Needed to make complete path, filedialogue value does not return the final slash
+            print(orig_path)
 
     # Show details
     # OLD    
@@ -147,10 +151,14 @@ def renameFiles():
             y += 1
     else:
         quit()
-
+    
+    currentEpisodeList.clear()
+    currentSubList.clear()
+    newEpisodeList.clear()
+    newSubList.clear()
 
 window = tk.Tk()
-# window.title("TV Show Plex Renamer")
+window.title("TV Show Plex Renamer")
 window.geometry("800x200")
 
 currentEpisodeList = []
