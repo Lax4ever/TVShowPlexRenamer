@@ -82,12 +82,12 @@ def getSourceMaterial():
         if os.path.isfile(orig_path + file):
             file_orig, extension = os.path.splitext(file)
             print(extension)
-            if extension == ".srt":
-                currentSubList.append(file)
-            elif extension == ".sub":
-                currentSubList.append(file)
-            else:
+            if extension in videoFormats:
                 currentEpisodeList.append(file)
+            if extension in subFormats:
+                currentSubList.append(file)
+            # else:
+            #     currentEpisodeList.append(file)
     
     # Check of initial lists
     print(currentEpisodeList)
@@ -212,6 +212,8 @@ currentEpisodeList = []
 currentSubList = []
 newEpisodeList = []
 newSubList = []
+videoFormats = [".mp4",".m4v",".flv",".mkv",".mov",".avi",".mts",".mpeg",".wmv",".mpg",".h264",".3g2",".3gp",".rm",".swf",".vob"]
+subFormats = [".sub",".srt",".sbv"]
 start = 1
 source_path = ""
 source_var = tk.StringVar()
