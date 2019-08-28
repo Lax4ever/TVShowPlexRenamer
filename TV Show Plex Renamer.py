@@ -203,6 +203,7 @@ def renameFiles():
     currentSubList.clear()
     newEpisodeList.clear()
     newSubList.clear()
+    text_box_left.delete(1.0, 'end')
 
 window = tk.Tk()
 window.title("TV Show Plex Renamer")
