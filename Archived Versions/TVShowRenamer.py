@@ -8,10 +8,12 @@ def buttonTest():
     
 # Button to quickly check source paths and episode lists
 def sourceCheck():    
-    print("Source Path = " + source_path)
+    # print("Source Path = " + source_path)
     print("Source Var = " + source_var.get())
     print(currentEpisodeList)
+    print(currentSubList)
     print(newEpisodeList)
+    print(newSubList)
 
 # Clear contents of the comparison panel
 def clearText():
@@ -36,27 +38,26 @@ def getSourceDir():
     # print(type(source_path))
 
 # Yes, it modifies the global source_path...
-def assignSourceDir():
-    global source_path
-    source_path = ""
-    source_path = getSourceDir()
+# def assignSourceDir():
+    # global source_path
+    # source_path = ""
+    # source_path = getSourceDir()
 
 # Read the directory and create the current and new episode lists, displaying them in the comparison panel
 def getSourceMaterial():
 
     # Check for source directory either manually entered or through filedialog
-    orig_path = source_path
-    if orig_path == source_path:
-        print("All Good Source")
-        print(orig_path)
+    orig_path = source_var.get()
+    # if orig_path == source_var.get():
+    #     print("All Good Source")
+    #     print(orig_path)
     if not orig_path:
-        print("Not Good. Get manual path from Entry box")
-        orig_path = source_var.get()
+        print("Get Path from Entry box")
+        orig_path = getSourceDir()
         # Check to make sure the path is, at the very least, valid
         if not os.path.exists(orig_path):
             print("Invalid text in Entry box, getting through filedialog")
-            dir_path_source = filedialog.askdirectory(title="Please select a folder")
-            orig_path = dir_path_source + "/" # Needed to make complete path, filedialogue value does not return the final slash
+            orig_path = getSourceDir
             print(orig_path)
 
     # Show details
@@ -141,18 +142,17 @@ def getSourceMaterial():
 def renameFiles():
 
     # Check for source directory either manually entered or through filedialog
-    orig_path = source_path
-    if orig_path == source_path:
-        print("All Good Rename")
-        print(orig_path)
+    orig_path = source_var.get()
+    # if orig_path == source_var.get():
+    #     print("All Good Source")
+    #     print(orig_path)
     if not orig_path:
-        print("Not Good. Get manual path from Entry box")
-        orig_path = source_var.get()
+        print("Get Path from Entry box")
+        orig_path = getSourceDir()
         # Check to make sure the path is, at the very least, valid
         if not os.path.exists(orig_path):
             print("Invalid text in Entry box, getting through filedialog")
-            dir_path_source = filedialog.askdirectory(title="Please select a folder")
-            orig_path = dir_path_source + "/" # Needed to make complete path, filedialogue value does not return the final slash
+            orig_path = getSourceDir
             print(orig_path)
 
     # OLD: Check to make sure that the lists appear correct. No longer needed due to inclusion of text boxes and seperation of get and rename functionality
@@ -216,7 +216,7 @@ newSubList = []
 videoFormats = [".mp4",".m4v",".flv",".mkv",".mov",".avi",".mts",".mpeg",".wmv",".mpg",".h264",".3g2",".3gp",".rm",".swf",".vob"]
 subFormats = [".sub",".srt",".sbv"]
 start = 1
-source_path = ""
+# source_path = ""
 source_var = tk.StringVar()
 season_var = tk.StringVar()
 showname_var = tk.StringVar()
@@ -243,7 +243,7 @@ season_number_spinbox.grid(row=4, column=2)
 
 test_source_button = tk.Button(show_frame, text="Browse")
 test_source_button.grid(row=2, column=3)
-test_source_button['command'] = assignSourceDir
+test_source_button['command'] = getSourceDir
 
 # Action Panel, and associated buttons
 action_panel = ttk.LabelFrame(window, text="Actions", relief=tk.RIDGE)
