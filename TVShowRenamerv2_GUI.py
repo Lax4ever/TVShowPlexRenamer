@@ -188,7 +188,7 @@ class Renamer_GUI:
         # Filter anything but file types from the creation of the original lists, and sort between subs and video files
         for file in os.listdir(orig_path):
             if os.path.isfile(orig_path + file):
-                file_orig, extension = os.path.splitext(file)
+                _, extension = os.path.splitext(file)
                 print(extension)
                 if extension in tvls.videoFormats:
                     tvls.currentEpisodeList.append(file)
@@ -225,7 +225,7 @@ class Renamer_GUI:
             else: 
                 episode_number = a
             # Need to make sure the extension is carried over
-            file_orig, extension = os.path.splitext(item)
+            _, extension = os.path.splitext(item)
             tvls.newEpisodeList.append(show_name + " S" + season_number + "E" + str(episode_number) + extension)
             if a == 1:
                 self.insertTextStart(tvls.currentEpisodeList[a-1], tvls.newEpisodeList[a-1])
@@ -239,7 +239,7 @@ class Renamer_GUI:
             else: 
                 episode_number = b
             # Need to make sure the extension is carried over
-            file_orig, extension = os.path.splitext(item)
+            _, extension = os.path.splitext(item)
             tvls.newSubList.append(show_name + " S" + season_number + "E" + str(episode_number) + extension)
             b += 1
 
