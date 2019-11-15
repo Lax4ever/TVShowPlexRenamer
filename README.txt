@@ -4,13 +4,14 @@ Very basic program. Used to rename TV Show video files to a format that is frien
 
 Please be aware of the following:
 
-1) Make sure your episodes are already seperated by season
+1) Make sure your episodes are already separated by season
 2) Each season folder should only have the episode video files and their sub files
 3) Each episode, at this time, can only have one sub file.
+4) The Renamer does not currently know how to handle multi-part, single file episodes.
 
 Usage Instructions
 
-1) Open the program with either the Pythong script, or the executable if Python is not installed
+1) Open the program with either the Python script, or the executable if Python is not installed
 2) Click the "Browse" button and find your season folder
 3) Enter a Show Name and select the correct Season Number
 4) Click the "Get" button
