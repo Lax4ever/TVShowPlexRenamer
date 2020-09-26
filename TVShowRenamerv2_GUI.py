@@ -2,6 +2,7 @@ import os
 import tkinter as tk
 from tkinter import ttk, filedialog, simpledialog
 import TVShowRenamerv2_Lists as tvls
+import platform
 
 class Renamer_GUI:
 
@@ -19,7 +20,7 @@ class Renamer_GUI:
 
         file_path_label = ttk.Label(show_frame, text="Season File Path")
         file_path_label.grid(row=1, column=1)
-        file_path_entry = ttk.Entry(show_frame, width=75, textvariable=self.source_var)
+        file_path_entry = ttk.Entry(show_frame, width=150, textvariable=self.source_var)
         file_path_entry.grid(row=2, column=1, columnspan=2)
 
         show_name_label = ttk.Label(show_frame, text="Show Name")
@@ -113,7 +114,7 @@ class Renamer_GUI:
         self.pathSet(dir_path)
 
     def textBoxClear(self):
-        self.text_box_left.delete(1,'end')
+        self.text_box_left.delete(1.0,'end')
 
     def insertTextStart(self, current, new):
         self.text_box_left.insert("end", current + " -> " + new)
@@ -146,7 +147,7 @@ class Renamer_GUI:
         if not orig_path:
             print("No Path in Entry box. Getting Path through filedialog")
             dir_path_source = filedialog.askdirectory(title="Please select a folder")
-            dir_path = dir_path_source + "/" # Needed to make complete path, filedialogue value does not return the final slash
+            dir_path = dir_path_source + self.platformCheck() # Needed to make complete path, filedialogue value does not return the final slash
             self.pathSet(dir_path)
             orig_path = self.pathGet()
             print("Path, check 2 = " + orig_path)
@@ -155,13 +156,16 @@ class Renamer_GUI:
         if not os.path.exists(orig_path):
             print("Invalid Path in Entry box, getting through filedialog")
             dir_path_source = filedialog.askdirectory(title="Please select a folder")
-            dir_path = dir_path_source + "/" # Needed to make complete path, filedialogue value does not return the final slash
+            dir_path = dir_path_source + self.platformCheck() # Needed to make complete path, filedialogue value does not return the final slash
             self.pathSet(dir_path)
             orig_path = self.pathGet()
             print("Path, check 3 = " + orig_path)
         
         # Passed both checks
         else:
+            dir_path = orig_path + self.platformCheck()
+            self.pathSet(dir_path)
+            orig_path = self.pathGet()
             print("Path " + orig_path + " is good.")
 
         # Show details
@@ -279,3 +283,9 @@ class Renamer_GUI:
             y += 1
 
         self.clearText()
+    
+    def platformCheck(self):
+        if platform.system() == "Linux" or platform.system() == "Darwin":
+            return "/"
+        else:
+            return "\\"
