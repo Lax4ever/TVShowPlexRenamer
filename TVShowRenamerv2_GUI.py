@@ -1,26 +1,26 @@
 import os
-import tkinter as tk
+import tkinter as tk 
 from tkinter import ttk, filedialog, simpledialog
-import TVShowRenamerv2_Lists as tvls
+import TVShowRenamerv2_Lists as tvls # Houses the lists of supported video and subtitle formats as well as the blank dictionaries
 import platform
 
 class Renamer_GUI:
 
     def __init__(self):
         
-        self.source_var = tk.StringVar()
-        self.showname_var = tk.StringVar()
-        self.season_var = tk.StringVar()
+        self.source_var = tk.StringVar() # file path in string format
+        self.showname_var = tk.StringVar() # show name in string format
+        self.season_var = tk.StringVar() # season number in string format
 
     def create_gui(self, window):
-        
-        # Season Details panel, and associated text boxes and buttons
+        # Season Details panel, and associated text boxes, frames, and buttons
+
         show_frame = ttk.LabelFrame(window, text="Show Details", relief=tk.RIDGE)
         show_frame.grid(row=1, column=1, sticky=tk.S + tk.E + tk.W + tk.N)
 
         file_path_label = ttk.Label(show_frame, text="Season File Path")
         file_path_label.grid(row=1, column=1)
-        file_path_entry = ttk.Entry(show_frame, width=150, textvariable=self.source_var)
+        file_path_entry = ttk.Entry(show_frame, width=75, textvariable=self.source_var)
         file_path_entry.grid(row=2, column=1, columnspan=2)
 
         show_name_label = ttk.Label(show_frame, text="Show Name")
@@ -73,73 +73,63 @@ class Renamer_GUI:
         test_source_button['command'] = self.sourceCheck
 
         # Text panel, and associated text box
-        text_panel = ttk.LabelFrame(window, relief=tk.RIDGE, text="Comparison Panel")
-        text_panel.grid(row=3, column=1, sticky=tk.S + tk.E + tk.W + tk.N)
-
-        self.text_box_left = tk.Text(text_panel, height=15, width=60)
-        self.text_box_left.grid(row=1, column=1)
-
-        # Removed text box, printed comparisons in same box
-        # text_box_right = tk.Text(text_panel, height=15, width=30)
-        # text_box_right.grid(row=1, column=2)
+        self.text_panel = ttk.LabelFrame(window, relief=tk.RIDGE, text="Comparison Panel")
+        self.text_panel.grid(row=3, column=1, sticky=tk.S + tk.E + tk.W + tk.N)
 
     def pathSet(self, path_string):
+    # Set the working directory path in the file path Entry box
         self.source_var.set(path_string)
         print("pathSet = " + self.source_var.get())
 
     def pathGet(self):
+    # Get the working directory as shown in the file path Entry box
         file_path = self.source_var.get()
         return file_path
 
     def showSet(self, show_name):
+    # Set the name of the Show in the show name Entry box
         self.showname_var.set(show_name)
         print("showSet = " + self.showname_var.get())
     
     def showGet(self):
+    # Get the name of the Show as shown in the show name Entry box
         show_name = self.showname_var.get()
         return show_name
 
     def seasonSet(self, season_number):
+    # Allows the Season Number to be set programmatically if not entered in the Season Number box
         self.showname_var.set(season_number)
         print("seasonSet = " + self.season_var.get())
 
     def seasonGet(self):
+    # Gets the Season Number as shown in the Season Number box
         season = self.season_var.get()
         return season
 
-    # Get source directory through filedialog
     def getSourceDir(self):
+    # Get source directory through filedialog    
         dir_path_source = filedialog.askdirectory(title="Please select a folder")
-        dir_path = dir_path_source + "/" # Needed to make complete path, filedialogue value does not return the final slash
+        dir_path = dir_path_source + self.platformCheck() # Needed to make complete path, filedialogue value does not return the final slash
         self.pathSet(dir_path)
 
-    def textBoxClear(self):
-        self.text_box_left.delete(1.0,'end')
-
-    def insertTextStart(self, current, new):
-        self.text_box_left.insert("end", current + " -> " + new)
-    
-    def insertText(self, current, new):
-        self.text_box_left.insert("end", "\n" + current + " -> " + new)
-
-    def sourceCheck(self):    
+    def sourceCheck(self):
+    # Allows for checking of the file path and dictionaries        
         source_check = self.pathGet()
         print("Source Var = " + source_check)
-        print(tvls.currentEpisodeList)
-        print(tvls.currentSubList)
-        print(tvls.newEpisodeList)
-        print(tvls.newSubList)
+        print(f"episodes: {tvls.episodes}")
+        print(f"subtitles: {tvls.subtitles}")
 
-    # Clear contents of the comparison panel
     def clearText(self):
-        self.textBoxClear()
-        tvls.currentEpisodeList.clear()
-        tvls.currentSubList.clear()
-        tvls.newEpisodeList.clear()
-        tvls.newSubList.clear()
+    # Clear contents of the comparison panel    
+        for eps in tvls.episodes:
+            tvls.episodes[eps]["currentText"].destroy()
+            tvls.episodes[eps]["newText"].destroy()
+            tvls.episodes[eps]["toggle"].destroy()
+        tvls.episodes.clear()
+        tvls.subtitles.clear()
     
-    # Read the directory and create the current and new episode lists, displaying them in the comparison panel
     def getSourceMaterial(self):
+    # Read the directory and create the episode and subtitle dictionaries, displaying the episode changes in the comparison panel
 
         # Check for source directory either manually entered or through filedialog
         orig_path = self.pathGet()
@@ -163,13 +153,15 @@ class Renamer_GUI:
         
         # Passed both checks
         else:
-            dir_path = orig_path + self.platformCheck()
-            self.pathSet(dir_path)
-            orig_path = self.pathGet()
-            print("Path " + orig_path + " is good.")
+            if orig_path[-1] != self.platformCheck():
+                dir_path = orig_path + self.platformCheck()
+                self.pathSet(dir_path)
+                orig_path = self.pathGet()
+                print(f"Path, final check = {orig_path}")
+            else: 
+                print("Path " + orig_path + " is good.")
 
-        # Show details
-        # Also checks if entries are blank
+        # Get show details already entered and request details that are missing
         show_name = self.showGet()
         print("Show Name, check 1 = " + show_name)
         if not show_name:
@@ -189,68 +181,69 @@ class Renamer_GUI:
         if int(season_number) < 10:
             season_number = "0" + season_number
 
-        # Filter anything but file types from the creation of the original lists, and sort between subs and video files
+        # Create dictionaries for episodes and subtitle files. Creates one of the text boxes and the checkbox for the episodes in the comparison panel
+        ep_num = tvls.start
         for file in os.listdir(orig_path):
             if os.path.isfile(orig_path + file):
                 _, extension = os.path.splitext(file)
-                print(extension)
                 if extension in tvls.videoFormats:
-                    tvls.currentEpisodeList.append(file)
+                    tvls.episodes[f"E{ep_num}"] = {"currentName": file}
+                    tvls.episodes[f"E{ep_num}"].update({"currentText": tk.Text(self.text_panel, height=1, width=(len(tvls.episodes[f"E{ep_num}"]["currentName"])) + 8), "toggle": tk.Checkbutton(self.text_panel)})
+                    tvls.episodes[f"E{ep_num}"]["currentText"].insert('end', f'{tvls.episodes[f"E{ep_num}"]["currentName"]}  --->')
+                    tvls.episodes[f"E{ep_num}"]["currentText"].grid(row=(ep_num), column=1)
+                    tvls.episodes[f"E{ep_num}"]["toggle"].grid(row=(ep_num), column=3)
+                    ep_num += 1
+
+        sub = tvls.start
+        for file in os.listdir(orig_path):
+            if os.path.isfile(orig_path + file):
+                _, extension = os.path.splitext(file)
                 if extension in tvls.subFormats:
-                    tvls.currentSubList.append(file)
-                # else:
-                #     currentEpisodeList.append(file)
+                    tvls.subtitles[f"S{sub}"] = {"currentSubName": file}
+                    sub += 1
 
-        # Check of initial lists
-        print(tvls.currentEpisodeList)
-        print(tvls.currentSubList)
+        # Check of initial dictionaries
+        # print(f"Current Episodes: {tvls.episodes}")
+        # print(f"Current Subs: {tvls.currentSubList}")
 
-        # Sort lists (NOT NEEDED AT THIS TIME)
-        # ok_to_sort = messagebox.askyesno("Sort Needed?", "Does this need to be sorted?")
-        # if ok_to_sort:
-        #     currentEpisodeList.sort(key=str.lower)
-        #     currentSubList.sort(key=str.lower)
-        #     # General lists check, post sort
-        #     print (currentEpisodeList)
-        #     print (currentSubList)
-
-        # Type Check, not really needed except for testing
-        # x = 0
-        # for name in currentEpisodeList:
-        #     print (type(currentEpisodeList[x]))
-        #     x += 1
-
-        # Create new lists with new file names
+        # Update the episode and subtitle dictionaries with the new name format, adding the final text box to the comparison panel
         a = tvls.start
-        b = tvls.start
-        for item in tvls.currentEpisodeList:
+        ep_num = tvls.start
+        for eps in tvls.episodes:
             if a < 10:
                 episode_number = "0" + str(a)
             else: 
                 episode_number = a
             # Need to make sure the extension is carried over
-            _, extension = os.path.splitext(item)
-            tvls.newEpisodeList.append(show_name + " S" + season_number + "E" + str(episode_number) + extension)
-            if a == 1:
-                self.insertTextStart(tvls.currentEpisodeList[a-1], tvls.newEpisodeList[a-1])
-            else: 
-                self.insertText(tvls.currentEpisodeList[a-1], tvls.newEpisodeList[a-1])
+            _, extension = os.path.splitext(tvls.episodes[eps]["currentName"])
+            new_name = show_name + " S" + season_number + "E" + str(episode_number) + extension
+            tvls.episodes[f"E{ep_num}"].update({"newName": new_name}) 
+            tvls.episodes[f"E{ep_num}"].update({"newText": tk.Text(self.text_panel, height=1, width=(len(tvls.episodes[f"E{ep_num}"]["newName"]) + 2))})
+            tvls.episodes[f"E{ep_num}"]["newText"].insert('end', tvls.episodes[f"E{ep_num}"]["newName"])
+            tvls.episodes[f"E{ep_num}"]["newText"].grid(row=(ep_num), column=2)
             a += 1
+            ep_num += 1  
 
-        for item in tvls.currentSubList:
+        b = tvls.start
+        sub = tvls.start
+        for subs in tvls.subtitles:
             if b < 10:
                 episode_number = "0" + str(b)
             else: 
                 episode_number = b
             # Need to make sure the extension is carried over
-            _, extension = os.path.splitext(item)
-            tvls.newSubList.append(show_name + " S" + season_number + "E" + str(episode_number) + extension)
+            _, extension = os.path.splitext(tvls.subtitles[subs]["currentSubName"])
+            new_name = show_name + " S" + season_number + "E" + str(episode_number) + extension
+            tvls.subtitles[f"S{sub}"].update({"newSubName": new_name})
             b += 1
+            sub += 1
 
-        print(tvls.newEpisodeList)
-        print(tvls.newSubList)
+        # Check of dictionaries with new episode/sub names
+        # print(f"New Episodes: {tvls.episodes}")
+        # print(f"New Subs {tvls.newSubList}")
 
     def renameFiles(self):
+    # Rename the supported video and subtitle files using the new names in the appropriate dictionaries
 
         # Check for source directory either manually entered or through filedialog
         orig_path = self.pathGet()
@@ -263,29 +256,24 @@ class Renamer_GUI:
                 orig_path = self.pathGet()
                 print(orig_path)
 
-        i = tvls.start
-        j = tvls.start
-        x = 0
-        y = 0
-        for oldEpisodeName in tvls.currentEpisodeList:
-            dst = str("".join(tvls.newEpisodeList[x]))
-            src = str(orig_path) + oldEpisodeName
-            dst = str(orig_path) + dst
+        # Rename files
+        for eps in tvls.episodes:
+            src = orig_path + tvls.episodes[eps]["currentName"]
+            dst = orig_path + tvls.episodes[eps]["newName"]
             os.rename(src, dst)
-            i += 1
-            x += 1
-        for oldSubName in tvls.currentSubList:
-            dst = str("".join(tvls.newSubList[y]))
-            src = str(orig_path) + oldSubName
-            dst = str(orig_path) + dst
+        for subs in tvls.subtitles:
+            src = str(orig_path) + tvls.subtitles[subs]["currentSubName"]
+            dst = str(orig_path) + tvls.subtitles[subs]["newSubName"]
             os.rename(src, dst)
-            j += 1
-            y += 1
 
+        # Clear the comparison panel
         self.clearText()
     
     def platformCheck(self):
-        if platform.system() == "Linux" or platform.system() == "Darwin":
+        # Checks the OS to return the correct slash type for file paths
+        if platform.system() == "Linux":
+            return "/"
+        elif platform.system() == "Darwin":
             return "/"
         else:
             return "\\"

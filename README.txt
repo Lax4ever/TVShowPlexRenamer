@@ -9,6 +9,11 @@ Please be aware of the following:
 3) Each episode, at this time, can only have one sub file.
 4) The Renamer does not currently know how to handle multi-part, single file episodes.
 
+Supported video extensions: ".mp4",".m4v",".flv",".mkv",".mov",".avi",".mts",".mpeg",".wmv",".mpg",".h264",".3g2",".3gp",".rm",".swf",".vob"
+Supported subtitle extensions: ".sub",".srt",".sbv"
+
+Renamer will ignore any file that doesn't have those extensions
+
 Usage Instructions
 
 1) Open the program with either the Python script, or the executable if Python is not installed
@@ -20,4 +25,4 @@ Usage Instructions
 
 Clear button can be used to clear the "Get" results if the conversion does not line up right
 
-Test button will only work with Python script, as the results of that button print to a console window
+Test button will only work with Python script, as the results of that button print only to a console window
