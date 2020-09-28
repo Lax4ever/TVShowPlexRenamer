@@ -198,9 +198,17 @@ class Renamer_GUI:
         for file in os.listdir(orig_path):
             if os.path.isfile(orig_path + file):
                 _, extension = os.path.splitext(file)
+                if extension == ".idx":
+                    tvls.subtitles[f"S{sub}"] = {"currentIDXName": file}
+                # Check if supported subtitle format
                 if extension in tvls.subFormats:
-                    tvls.subtitles[f"S{sub}"] = {"currentSubName": file}
-                    sub += 1
+                    if f"S{sub}" in tvls.subtitles.keys():
+                        tvls.subtitles[f"S{sub}"].update({"currentSubName": file})
+                        sub += 1
+                    else:
+                        tvls.subtitles[f"S{sub}"] = {"currentSubName": file}
+                        sub += 1
+
 
         # Check of initial dictionaries
         # print(f"Current Episodes: {tvls.episodes}")
@@ -231,6 +239,13 @@ class Renamer_GUI:
                 episode_number = "0" + str(b)
             else: 
                 episode_number = b
+            # Create new IDX file name, if current exists
+            if "currentIDXName" in tvls.subtitles[f"S{sub}"]:
+                # Need to make sure the extension is carried over
+                _, extension = os.path.splitext(tvls.subtitles[subs]["currentIDXName"])
+                new_name = show_name + " S" + season_number + "E" + str(episode_number) + extension
+                tvls.subtitles[f"S{sub}"].update({"newIDXName": new_name})
+            # Creating new file names for all other supported subtitle files
             # Need to make sure the extension is carried over
             _, extension = os.path.splitext(tvls.subtitles[subs]["currentSubName"])
             new_name = show_name + " S" + season_number + "E" + str(episode_number) + extension
@@ -262,6 +277,10 @@ class Renamer_GUI:
             dst = orig_path + tvls.episodes[eps]["newName"]
             os.rename(src, dst)
         for subs in tvls.subtitles:
+            if "currentIDXName" in tvls.subtitles[subs]:
+                idx_src = str(orig_path) + tvls.subtitles[subs]["currentIDXName"]
+                idx_dst = str(orig_path) + tvls.subtitles[subs]["newIDXName"]
+                os.rename(idx_src, idx_dst)
             src = str(orig_path) + tvls.subtitles[subs]["currentSubName"]
             dst = str(orig_path) + tvls.subtitles[subs]["newSubName"]
             os.rename(src, dst)

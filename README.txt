@@ -6,11 +6,13 @@ Please be aware of the following:
 
 1) Make sure your episodes are already separated by season
 2) Each season folder should only have the episode video files and their sub files
-3) Each episode, at this time, can only have one sub file.
+3) Each episode, at this time, can only have one sub file, unless it is an .idx and .sub pair
 4) The Renamer does not currently know how to handle multi-part, single file episodes.
 
 Supported video extensions: ".mp4",".m4v",".flv",".mkv",".mov",".avi",".mts",".mpeg",".wmv",".mpg",".h264",".3g2",".3gp",".rm",".swf",".vob"
-Supported subtitle extensions: ".sub",".srt",".sbv"
+Supported subtitle extensions: ".sub",".srt",".sbv, .idx"
+
+If .idx subtitle files are present, make sure there is a corresponding .sub file.
 
 Renamer will ignore any file that doesn't have those extensions
 
